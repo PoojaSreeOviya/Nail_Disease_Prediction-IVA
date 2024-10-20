@@ -3,6 +3,7 @@ import numpy as np
 import cv2
 import tensorflow as tf
 from PIL import Image
+from sklearn.metrics import classification_report, confusion_matrix
 
 # Load the trained model
 model = tf.keras.models.load_model('nail_disease_model.keras')
@@ -22,18 +23,11 @@ def load_and_preprocess_image(image):
 # Streamlit app UI
 st.title("Nail Disease Prediction")
 
-# Option to upload from file or camera
-st.markdown("**Upload an image or capture it using the camera**")
-option = st.selectbox('Choose an option', ('Upload from file', 'Capture using camera'))
-
-uploaded_image = None
-if option == 'Upload from file':
-    uploaded_image = st.file_uploader("Choose an image...", type=["jpg", "png", "jpeg"])
-elif option == 'Capture using camera':
-    uploaded_image = st.camera_input("Capture an image")
+# Upload image
+uploaded_image = st.file_uploader("Upload an image", type=["jpg", "png", "jpeg"])
 
 if uploaded_image is not None:
-    st.image(uploaded_image, caption="Selected Image", use_column_width=True)
+    st.image(uploaded_image, caption="Uploaded Image", use_column_width=True)
     
     # Preprocess and predict the class
     img_array = load_and_preprocess_image(uploaded_image)
@@ -41,6 +35,4 @@ if uploaded_image is not None:
     predicted_class = class_names[np.argmax(prediction)]
     
     # Display the prediction
-    st.write(f"**Predicted Class:** {predicted_class}")
-else:
-    st.warning("Please upload or capture an image to get a prediction.")
+    st.write(f"Predicted Class: {predicted_class}")
